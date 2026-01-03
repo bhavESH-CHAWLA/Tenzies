@@ -11,11 +11,14 @@ export default function App(){
 
   
 const { width, height } = useWindowSize();
-const [newdice ,setnewDice]=React.useState(generateAllNewDice());
+const [newdice ,setnewDice]=React.useState(()=>generateAllNewDice());
 const game=newdice.every(die=> die.isheld)&&newdice.every(die=>die.value===newdice[0].value);
+const buttonref=React.useRef(null);
+console.log(buttonref);
 
-  
-
+  React.useEffect(()=>{
+    buttonref.current.focus();
+  },[game])
   function hold(id){
    setnewDice(prev=>{
     return prev.map((obj)=>{
@@ -40,11 +43,17 @@ const game=newdice.every(die=> die.isheld)&&newdice.every(die=>die.value===newdi
   }
 
   function handleRoll(){
-    setnewDice((prev=>
+    if(!game){
+      setnewDice((prev=>
       prev.map((obj=>
         obj.isheld===false?{...obj,value:Math.floor(Math.random()*6) + 1}:obj
       ))
     ));
+    }
+    else{
+      setnewDice(generateAllNewDice);
+    }
+    
   }
 
   return(
@@ -65,7 +74,7 @@ const game=newdice.every(die=> die.isheld)&&newdice.every(die=>die.value===newdi
           
         })}
         </div>
-        <button className="roll-dice" onClick={handleRoll}>{game?"New Game":"Roll Dice"}</button>
+        <button className="roll-dice"  ref={buttonref} onClick={handleRoll}>{game?"New Game":"Roll Dice"}</button>
          
        
       </main>
